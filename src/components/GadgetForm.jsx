@@ -14,30 +14,12 @@ export default function GadgetForm({ canShowRegistry, onAddGadget, onShowTable }
     const [errors, setErrors] = useState({})
 
     function validateField(fieldName, fieldValue) {
-        if (fieldName === 'gadgetName') {
-            if (fieldValue.trim() === '') {
-                return 'Gadget Name is required.'
-            }
-
-            if (fieldValue.trim().length < 3) {
-                return 'Gadget Name must contain at least 3 characters.'
-            }
+        if (fieldName === 'gadgetName' && fieldValue.trim() === '') {
+            return 'Gadget Name is required.'
         }
 
-        if (fieldName === 'healthRating') {
-            const rating = Number(fieldValue)
-
-            if (fieldValue === '') {
-                return 'Health Rating is required.'
-            }
-
-            if (Number.isInteger(rating) === false) {
-                return 'Health Rating must be a whole number.'
-            }
-
-            if (rating < 1 || rating > 100) {
-                return 'Health Rating must be between 1 and 100.'
-            }
+        if (fieldName === 'gadgetName' && fieldValue.trim().length < 3) {
+            return 'Gadget Name must contain at least 3 characters.'
         }
 
         if (fieldName === 'category' && fieldValue === '') {
@@ -46,6 +28,18 @@ export default function GadgetForm({ canShowRegistry, onAddGadget, onShowTable }
 
         if (fieldName === 'manufacturer' && fieldValue.trim() === '') {
             return 'Manufacturer is required.'
+        }
+
+        if (fieldName === 'healthRating' && fieldValue === '') {
+            return 'Health Rating is required.'
+        }
+
+        if (fieldName === 'healthRating' && Number.isInteger(Number(fieldValue)) === false) {
+            return 'Health Rating must be a whole number.'
+        }
+
+        if (fieldName === 'healthRating' && (Number(fieldValue) < 1 || Number(fieldValue) > 100)) {
+            return 'Health Rating must be between 1 and 100.'
         }
 
         if (fieldName === 'techBrandName' && fieldValue.trim() === '') {
@@ -71,9 +65,15 @@ export default function GadgetForm({ canShowRegistry, onAddGadget, onShowTable }
 
         setErrors(newErrors)
 
-        return Object.values(newErrors).every(function checkError(errorMessage) {
-            return errorMessage === ''
-        })
+        let formIsValid = true
+
+        for (const errorMessage of Object.values(newErrors)) {
+            if (errorMessage !== '') {
+                formIsValid = false
+            }
+        }
+
+        return formIsValid
     }
 
     function handleChange(event) {

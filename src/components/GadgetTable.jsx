@@ -4,6 +4,7 @@ import {
     tableFeatures,
     useTable,
 } from '@tanstack/react-table'
+import { useState } from 'react'
 
 const features = tableFeatures({
     rowPaginationFeature,
@@ -44,9 +45,23 @@ export default function GadgetTable({
     onShowForm,
     selectedGadgetIndex,
 }) {
+    const [roleFilter, setRoleFilter] = useState('All')
+
+    function getFilteredGadgets() {
+        if (roleFilter === 'All') {
+            return gadgets
+        }
+
+        return gadgets.filter(function filterGadget(gadget) {
+            return gadget.userRole === roleFilter
+        })
+    }
+
+    const filteredGadgets = getFilteredGadgets()
+
     const table = useTable({
         features: features,
-        data: gadgets,
+        data: filteredGadgets,
         columns: columns,
         initialState: {
             pagination: {
@@ -65,6 +80,11 @@ export default function GadgetTable({
 
     function handleNextPage() {
         table.nextPage()
+    }
+
+    function handleRoleFilterChange(event) {
+        setRoleFilter(event.target.value)
+        table.setPageIndex(0)
     }
 
     function getRowClassName(rowIndex) {
@@ -143,6 +163,23 @@ export default function GadgetTable({
 
                 <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)]">
                     <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4 shadow-lg">
+                        <div className="mb-4 flex items-center gap-3">
+                            <label className="font-medium text-zinc-200" htmlFor="roleFilter">
+                                Filter by Role
+                            </label>
+
+                            <select
+                                className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                                id="roleFilter"
+                                value={roleFilter}
+                                onChange={handleRoleFilterChange}
+                            >
+                                <option value="All">All Roles</option>
+                                <option value="Engineer">Engineer</option>
+                                <option value="Tester">Tester</option>
+                            </select>
+                        </div>
+
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse text-left">
                                 <thead>
@@ -159,14 +196,15 @@ export default function GadgetTable({
                                 <tbody>
                                     {table.getRowModel().rows.map(function renderRow(row) {
                                         const gadget = row.original
+                                        const gadgetIndex = gadgets.indexOf(gadget)
 
                                         function handleRowClick() {
-                                            onSelectGadget(row.index)
+                                            onSelectGadget(gadgetIndex)
                                         }
 
                                         return (
                                             <tr
-                                                className={getRowClassName(row.index)}
+                                                className={getRowClassName(gadgetIndex)}
                                                 key={row.id}
                                                 onClick={handleRowClick}
                                             >
