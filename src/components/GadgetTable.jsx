@@ -64,7 +64,6 @@ export default function GadgetTable({ gadgets, onShowForm }) {
     return (
         <div>
             <h1>Gadget Registry</h1>
-            <p>Submitted gadgets: {gadgets.length}</p>
 
             <button type="button" onClick={onShowForm}>
                 Add Another Gadget

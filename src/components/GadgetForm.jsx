@@ -11,6 +11,70 @@ const initialFormData = {
 
 export default function GadgetForm({ onAddGadget }) {
     const [formData, setFormData] = useState(initialFormData)
+    const [errors, setErrors] = useState({})
+
+    function validateField(fieldName, fieldValue) {
+        if (fieldName === 'gadgetName') {
+            if (fieldValue.trim() === '') {
+                return 'Gadget Name is required.'
+            }
+
+            if (fieldValue.trim().length < 3) {
+                return 'Gadget Name must contain at least 3 characters.'
+            }
+        }
+
+        if (fieldName === 'healthRating') {
+            const rating = Number(fieldValue)
+
+            if (fieldValue === '') {
+                return 'Health Rating is required.'
+            }
+
+            if (Number.isInteger(rating) === false) {
+                return 'Health Rating must be a whole number.'
+            }
+
+            if (rating < 1 || rating > 100) {
+                return 'Health Rating must be between 1 and 100.'
+            }
+        }
+
+        if (fieldName === 'category' && fieldValue === '') {
+            return 'Category is required.'
+        }
+
+        if (fieldName === 'manufacturer' && fieldValue.trim() === '') {
+            return 'Manufacturer is required.'
+        }
+
+        if (fieldName === 'techBrandName' && fieldValue.trim() === '') {
+            return 'Tech Brand Name is required.'
+        }
+
+        if (fieldName === 'userRole' && fieldValue === '') {
+            return 'User Role is required.'
+        }
+
+        return ''
+    }
+
+    function validateForm() {
+        const newErrors = {
+            gadgetName: validateField('gadgetName', formData.gadgetName),
+            category: validateField('category', formData.category),
+            manufacturer: validateField('manufacturer', formData.manufacturer),
+            healthRating: validateField('healthRating', formData.healthRating),
+            techBrandName: validateField('techBrandName', formData.techBrandName),
+            userRole: validateField('userRole', formData.userRole),
+        }
+
+        setErrors(newErrors)
+
+        return Object.values(newErrors).every(function checkError(errorMessage) {
+            return errorMessage === ''
+        })
+    }
 
     function handleChange(event) {
         const fieldName = event.target.name
@@ -20,10 +84,21 @@ export default function GadgetForm({ onAddGadget }) {
             ...formData,
             [fieldName]: fieldValue,
         })
+
+        setErrors({
+            ...errors,
+            [fieldName]: validateField(fieldName, fieldValue),
+        })
     }
 
     function handleSubmit(event) {
         event.preventDefault()
+
+        const formIsValid = validateForm()
+
+        if (formIsValid === false) {
+            return
+        }
 
         const newGadget = {
             ...formData,
@@ -32,6 +107,7 @@ export default function GadgetForm({ onAddGadget }) {
 
         onAddGadget(newGadget)
         setFormData(initialFormData)
+        setErrors({})
     }
 
     return (
@@ -45,6 +121,7 @@ export default function GadgetForm({ onAddGadget }) {
                     value={formData.gadgetName}
                     onChange={handleChange}
                 />
+                {errors.gadgetName && <p>{errors.gadgetName}</p>}
             </div>
 
             <div>
@@ -61,6 +138,7 @@ export default function GadgetForm({ onAddGadget }) {
                     <option value="Wearable">Wearable</option>
                     <option value="Audio">Audio</option>
                 </select>
+                {errors.category && <p>{errors.category}</p>}
             </div>
 
             <div>
@@ -72,6 +150,7 @@ export default function GadgetForm({ onAddGadget }) {
                     value={formData.manufacturer}
                     onChange={handleChange}
                 />
+                {errors.manufacturer && <p>{errors.manufacturer}</p>}
             </div>
 
             <div>
@@ -86,6 +165,7 @@ export default function GadgetForm({ onAddGadget }) {
                     value={formData.healthRating}
                     onChange={handleChange}
                 />
+                {errors.healthRating && <p>{errors.healthRating}</p>}
             </div>
 
             <div>
@@ -97,6 +177,7 @@ export default function GadgetForm({ onAddGadget }) {
                     value={formData.techBrandName}
                     onChange={handleChange}
                 />
+                {errors.techBrandName && <p>{errors.techBrandName}</p>}
             </div>
 
             <fieldset>
@@ -125,6 +206,8 @@ export default function GadgetForm({ onAddGadget }) {
                     />
                     Tester
                 </label>
+
+                {errors.userRole && <p>{errors.userRole}</p>}
             </fieldset>
 
             <button type="submit">Register Gadget</button>
