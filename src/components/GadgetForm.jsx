@@ -9,7 +9,7 @@ const initialFormData = {
     userRole: '',
 }
 
-export default function GadgetForm({ onAddGadget }) {
+export default function GadgetForm({ canShowRegistry, onAddGadget, onShowTable }) {
     const [formData, setFormData] = useState(initialFormData)
     const [errors, setErrors] = useState({})
 
@@ -111,22 +111,28 @@ export default function GadgetForm({ onAddGadget }) {
     }
 
     return (
-        <form onSubmit={handleSubmit} noValidate>
-            <div>
-                <label htmlFor="gadgetName">Gadget Name</label>
+        <form
+            className="mt-6 grid gap-4 rounded-lg border border-zinc-800 bg-zinc-900 p-6 shadow-lg sm:grid-cols-2"
+            onSubmit={handleSubmit}
+            noValidate
+        >
+            <div className="flex flex-col gap-1">
+                <label className="font-medium text-zinc-200" htmlFor="gadgetName">Gadget Name</label>
                 <input
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     id="gadgetName"
                     name="gadgetName"
                     type="text"
                     value={formData.gadgetName}
                     onChange={handleChange}
                 />
-                {errors.gadgetName && <p>{errors.gadgetName}</p>}
+                {errors.gadgetName && <p className="text-sm text-red-400">{errors.gadgetName}</p>}
             </div>
 
-            <div>
-                <label htmlFor="category">Category</label>
+            <div className="flex flex-col gap-1">
+                <label className="font-medium text-zinc-200" htmlFor="category">Category</label>
                 <select
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     id="category"
                     name="category"
                     value={formData.category}
@@ -138,24 +144,26 @@ export default function GadgetForm({ onAddGadget }) {
                     <option value="Wearable">Wearable</option>
                     <option value="Audio">Audio</option>
                 </select>
-                {errors.category && <p>{errors.category}</p>}
+                {errors.category && <p className="text-sm text-red-400">{errors.category}</p>}
             </div>
 
-            <div>
-                <label htmlFor="manufacturer">Manufacturer</label>
+            <div className="flex flex-col gap-1">
+                <label className="font-medium text-zinc-200" htmlFor="manufacturer">Manufacturer</label>
                 <input
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     id="manufacturer"
                     name="manufacturer"
                     type="text"
                     value={formData.manufacturer}
                     onChange={handleChange}
                 />
-                {errors.manufacturer && <p>{errors.manufacturer}</p>}
+                {errors.manufacturer && <p className="text-sm text-red-400">{errors.manufacturer}</p>}
             </div>
 
-            <div>
-                <label htmlFor="healthRating">Health Rating</label>
+            <div className="flex flex-col gap-1">
+                <label className="font-medium text-zinc-200" htmlFor="healthRating">Health Rating</label>
                 <input
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     id="healthRating"
                     name="healthRating"
                     type="number"
@@ -165,29 +173,32 @@ export default function GadgetForm({ onAddGadget }) {
                     value={formData.healthRating}
                     onChange={handleChange}
                 />
-                {errors.healthRating && <p>{errors.healthRating}</p>}
+                {errors.healthRating && <p className="text-sm text-red-400">{errors.healthRating}</p>}
             </div>
 
-            <div>
-                <label htmlFor="techBrandName">Tech Brand Name</label>
+            <div className="flex flex-col gap-1 sm:col-span-2">
+                <label className="font-medium text-zinc-200" htmlFor="techBrandName">Tech Brand Name</label>
                 <input
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     id="techBrandName"
                     name="techBrandName"
                     type="text"
                     value={formData.techBrandName}
                     onChange={handleChange}
                 />
-                {errors.techBrandName && <p>{errors.techBrandName}</p>}
+                {errors.techBrandName && <p className="text-sm text-red-400">{errors.techBrandName}</p>}
             </div>
 
-            <fieldset>
-                <legend>User Role</legend>
+            <fieldset className="sm:col-span-2">
+                <legend className="font-medium text-zinc-200">User Role</legend>
 
-                <label htmlFor="engineer">
+                <div className="mt-2 flex gap-6">
+                <label className="flex items-center gap-2" htmlFor="engineer">
                     <input
                         id="engineer"
                         name="userRole"
                         type="radio"
+                        className="accent-cyan-400"
                         value="Engineer"
                         checked={formData.userRole === 'Engineer'}
                         onChange={handleChange}
@@ -195,22 +206,41 @@ export default function GadgetForm({ onAddGadget }) {
                     Engineer
                 </label>
 
-                <label htmlFor="tester">
+                <label className="flex items-center gap-2" htmlFor="tester">
                     <input
                         id="tester"
                         name="userRole"
                         type="radio"
+                        className="accent-cyan-400"
                         value="Tester"
                         checked={formData.userRole === 'Tester'}
                         onChange={handleChange}
                     />
                     Tester
                 </label>
+                </div>
 
-                {errors.userRole && <p>{errors.userRole}</p>}
+                {errors.userRole && <p className="mt-1 text-sm text-red-400">{errors.userRole}</p>}
             </fieldset>
 
-            <button type="submit">Register Gadget</button>
+            <div className="flex gap-3 sm:col-span-2">
+                {canShowRegistry && (
+                    <button
+                        className="rounded border border-zinc-700 px-4 py-2 font-medium text-zinc-200 hover:border-cyan-400 hover:text-cyan-300"
+                        type="button"
+                        onClick={onShowTable}
+                    >
+                        Back to Registry
+                    </button>
+                )}
+
+                <button
+                    className="flex-1 rounded bg-cyan-400 px-4 py-2 font-medium text-zinc-950 hover:bg-cyan-300"
+                    type="submit"
+                >
+                    Register Gadget
+                </button>
+            </div>
         </form>
     )
 }

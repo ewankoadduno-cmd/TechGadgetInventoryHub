@@ -37,7 +37,13 @@ const columns = [
     },
 ]
 
-export default function GadgetTable({ gadgets, onShowForm }) {
+export default function GadgetTable({
+    activeGadget,
+    gadgets,
+    onSelectGadget,
+    onShowForm,
+    selectedGadgetIndex,
+}) {
     const table = useTable({
         features: features,
         data: gadgets,
@@ -50,7 +56,7 @@ export default function GadgetTable({ gadgets, onShowForm }) {
         },
     })
 
-  const currentPage = table.state.pagination.pageIndex + 1
+    const currentPage = table.state.pagination.pageIndex + 1
     const pageCount = table.getPageCount()
 
     function handlePreviousPage() {
@@ -61,64 +67,152 @@ export default function GadgetTable({ gadgets, onShowForm }) {
         table.nextPage()
     }
 
+    function getRowClassName(rowIndex) {
+        if (rowIndex === selectedGadgetIndex) {
+            return 'cursor-pointer border-b border-zinc-700 bg-zinc-700 text-white'
+        }
+
+        return 'cursor-pointer border-b border-zinc-800 text-zinc-300 hover:bg-zinc-800'
+    }
+
+    function renderActiveGadget() {
+        if (activeGadget === null) {
+            return (
+                <p className="mt-3 text-zinc-400">
+                    Select a table row to view its complete details.
+                </p>
+            )
+        }
+
+        return (
+            <div className="mt-4 space-y-4">
+                <div>
+                    <p className="text-sm text-zinc-500">Gadget Name</p>
+                    <p className="font-medium text-white">{activeGadget.gadgetName}</p>
+                </div>
+
+                <div>
+                    <p className="text-sm text-zinc-500">Category</p>
+                    <p className="text-zinc-200">{activeGadget.category}</p>
+                </div>
+
+                <div>
+                    <p className="text-sm text-zinc-500">Manufacturer</p>
+                    <p className="text-zinc-200">{activeGadget.manufacturer}</p>
+                </div>
+
+                <div>
+                    <p className="text-sm text-zinc-500">Health Rating</p>
+                    <p className="text-zinc-200">{activeGadget.healthRating}</p>
+                </div>
+
+                <div>
+                    <p className="text-sm text-zinc-500">Tech Brand Name</p>
+                    <p className="text-zinc-200">{activeGadget.techBrandName}</p>
+                </div>
+
+                <div>
+                    <p className="text-sm text-zinc-500">User Role</p>
+                    <span className="mt-1 inline-block rounded-full bg-cyan-400 px-3 py-1 text-sm font-medium text-zinc-950">
+                        {activeGadget.userRole}
+                    </span>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <div>
-            <h1>Gadget Registry</h1>
+        <div className="min-h-screen bg-slate-900 px-4 py-8 text-zinc-100">
+            <div className="mx-auto max-w-7xl">
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white">
+                            Gadget Registry
+                        </h1>
+                        <p className="mt-1 text-zinc-400">Submitted gadgets: {gadgets.length}</p>
+                    </div>
 
-            <button type="button" onClick={onShowForm}>
-                Add Another Gadget
-            </button>
+                    <button
+                        className="rounded bg-cyan-400 px-4 py-2 font-medium text-zinc-950 hover:bg-cyan-300"
+                        type="button"
+                        onClick={onShowForm}
+                    >
+                        Add Gadget
+                    </button>
+                </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">Gadget Name</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Manufacturer</th>
-                        <th scope="col">Health Rating</th>
-                        <th scope="col">Tech Brand Name</th>
-                        <th scope="col">User Role</th>
-                    </tr>
-                </thead>
+                <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)]">
+                    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4 shadow-lg">
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse text-left">
+                                <thead>
+                                    <tr className="border-b border-zinc-700 bg-zinc-800 text-zinc-200">
+                                        <th className="px-3 py-3" scope="col">Gadget Name</th>
+                                        <th className="px-3 py-3" scope="col">Category</th>
+                                        <th className="px-3 py-3" scope="col">Manufacturer</th>
+                                        <th className="px-3 py-3" scope="col">Health Rating</th>
+                                        <th className="px-3 py-3" scope="col">Tech Brand Name</th>
+                                        <th className="px-3 py-3" scope="col">User Role</th>
+                                    </tr>
+                                </thead>
 
-                <tbody>
-                    {table.getRowModel().rows.map(function renderRow(row) {
-                        const gadget = row.original
+                                <tbody>
+                                    {table.getRowModel().rows.map(function renderRow(row) {
+                                        const gadget = row.original
 
-                        return (
-                            <tr key={row.id}>
-                                <td>{gadget.gadgetName}</td>
-                                <td>{gadget.category}</td>
-                                <td>{gadget.manufacturer}</td>
-                                <td>{gadget.healthRating}</td>
-                                <td>{gadget.techBrandName}</td>
-                                <td>{gadget.userRole}</td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                                        function handleRowClick() {
+                                            onSelectGadget(row.index)
+                                        }
 
-            <div>
-                <button
-                    type="button"
-                    onClick={handlePreviousPage}
-                    disabled={table.getCanPreviousPage() === false}
-                >
-                    Previous
-                </button>
+                                        return (
+                                            <tr
+                                                className={getRowClassName(row.index)}
+                                                key={row.id}
+                                                onClick={handleRowClick}
+                                            >
+                                                <td className="px-3 py-3">{gadget.gadgetName}</td>
+                                                <td className="px-3 py-3">{gadget.category}</td>
+                                                <td className="px-3 py-3">{gadget.manufacturer}</td>
+                                                <td className="px-3 py-3">{gadget.healthRating}</td>
+                                                <td className="px-3 py-3">{gadget.techBrandName}</td>
+                                                <td className="px-3 py-3">{gadget.userRole}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
 
-                <span>
-                    Page {currentPage} of {pageCount}
-                </span>
+                        <div className="mt-4 flex items-center justify-between gap-3">
+                            <button
+                                className="rounded border border-zinc-700 px-3 py-2 text-zinc-200 hover:border-cyan-400 hover:text-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
+                                type="button"
+                                onClick={handlePreviousPage}
+                                disabled={table.getCanPreviousPage() === false}
+                            >
+                                Previous
+                            </button>
 
-                <button
-                    type="button"
-                    onClick={handleNextPage}
-                    disabled={table.getCanNextPage() === false}
-                >
-                    Next
-                </button>
+                            <span className="text-sm text-zinc-400">
+                                Page {currentPage} of {pageCount}
+                            </span>
+
+                            <button
+                                className="rounded border border-zinc-700 px-3 py-2 text-zinc-200 hover:border-cyan-400 hover:text-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
+                                type="button"
+                                onClick={handleNextPage}
+                                disabled={table.getCanNextPage() === false}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6 shadow-lg">
+                        <h2 className="text-xl font-semibold text-white">Active Gadget</h2>
+                        {renderActiveGadget()}
+                    </div>
+                </div>
             </div>
         </div>
     )
