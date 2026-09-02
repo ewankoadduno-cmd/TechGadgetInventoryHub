@@ -7,14 +7,9 @@ function App() {
   const [pageState, setPageState] = useState('gadget_form')
 
   function handleAddGadget(newGadget) {
-    const gadgetWithId = {
-      ...newGadget,
-      id: crypto.randomUUID(),
-    }
-
     setGadgets([
       ...gadgets,
-      gadgetWithId,
+      newGadget,
     ])
 
     setPageState('gadget_table')
@@ -26,11 +21,11 @@ function App() {
 
   if (pageState === 'gadget_form') {
     return (
-      <main>
+      <div>
         <h1>Tech Gadget Inventory Hub</h1>
         <p>Registered gadgets: {gadgets.length}</p>
         <GadgetForm onAddGadget={handleAddGadget} />
-      </main>
+      </div>
     )
   }
 
