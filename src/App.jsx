@@ -1,36 +1,49 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
 import GadgetForm from './components/GadgetForm'
 import GadgetTable from './components/GadgetTable'
 
-
 function App() {
-  const [pageState, setpageState] = useState("gadget_form");
+  const [gadgets, setGadgets] = useState([])
+  const [pageState, setPageState] = useState('gadget_form')
 
-  if (pageState === "gadget_form") {
+  function handleAddGadget(newGadget) {
+    const gadgetWithId = {
+      ...newGadget,
+      id: crypto.randomUUID(),
+    }
+
+    setGadgets([
+      ...gadgets,
+      gadgetWithId,
+    ])
+
+    setPageState('gadget_table')
+  }
+
+  function handleShowForm() {
+    setPageState('gadget_form')
+  }
+
+  if (pageState === 'gadget_form') {
     return (
-      <>
-        <GadgetForm></GadgetForm>
-      </>
+      <main>
+        <h1>Tech Gadget Inventory Hub</h1>
+        <p>Registered gadgets: {gadgets.length}</p>
+        <GadgetForm onAddGadget={handleAddGadget} />
+      </main>
     )
   }
-  else if (pageState === "gadget_table") {
+
+  if (pageState === 'gadget_table') {
     return (
-      <>
-        <GadgetForm></GadgetForm>
-      </>
+      <GadgetTable
+        gadgets={gadgets}
+        onShowForm={handleShowForm}
+      />
     )
   }
 
-
-  return (
-    <>
-      <div className='p bg-amber-800'>BRO</div>
-    </>
-  )
+  return null
 }
 
 export default App
